@@ -1,10 +1,9 @@
 import tkinter as tk
 import random 
 import math
-import ctypes
+import os
+import tkinter.messagebox
 
-
-# In[66]:
 window = tk.Tk()
 window.title('Minesweeper')
 
@@ -12,26 +11,18 @@ def return_size(entry):
     global num_rc
     num_rc = int(enterSize.get())
     
-    
-    
     sizePrompt.destroy()
     enterSize.destroy()
     bombsReady()
-
-
-# In[67]:
-
+    
 
 def bombsReady():
     
     bombsPrompt.grid(row=1, column=0, padx = 30)
     
     enterBombs.grid(row=2, column=0, pady = 30)
-
-
-# In[68]:
-
-
+    
+    
 def return_bombs(entry):
     global num_bombs
     num_bombs = int(enterBombs.get())
@@ -39,11 +30,7 @@ def return_bombs(entry):
     bombsPrompt.destroy()
     inputsEntered()
     
-
-
-# In[69]:
-
-
+    
 def inputsEntered():
 
     window.rowconfigure(list(range(0, num_rc)), minsize = 50, weight = 1)
@@ -51,10 +38,8 @@ def inputsEntered():
     global cells
     global numChecked
     
-    
     cells = [[''] * num_rc for i in range(num_rc)]
     
-
     for row in range(num_rc):
         for col in range(num_rc):
             cells[row][col] = tk.Label(window, text='', borderwidth=1, relief="solid")
@@ -63,14 +48,21 @@ def inputsEntered():
             cells[row][col].bind("<Button-3>", cellFlagged)
             cells[row][col].grid(row = row, column = col, sticky="nsew")
     
-
-    
     placeBombs()
-
-
-# In[70]:
-
-
+    
+    
+def notify(title, text):
+    os.system("""
+              osascript -e 'display dialog "{}" with title "{}"'
+              """.format(text, title))
+              
+              
+def notify(title, text):
+    os.system("""
+              osascript -e 'display dialog "{}" with title "{}"'
+              """.format(text, title))
+              
+              
 def placeBombs():
     global bomb_placements
     
@@ -125,11 +117,8 @@ def placeBombs():
                     cells[row][col]["text"] = boxes_bombs[row][col]
                     numGiven += 1
                     numChecked += 1
-
-
-# In[71]:
-
-
+                    
+                    
 def cellFlagged(event):
     global numFlagged
     
@@ -144,18 +133,18 @@ def cellFlagged(event):
     if (numChecked + numFlagged) == (num_rc * num_rc):
         if numFlagged == num_bombs:
             window.destroy()
-            
-            
-            
-            ctypes.windll.user32.MessageBoxW(0, "YOU WIN!!", "CONGRATS!!", 1)
+            notify("Congratulations!", "YOU WIN")
             
         else:
-            window.destroy()
-            ctypes.windll.user32.MessageBoxW(0, "YOU LOSE!!", "TRY ANOTHER GAME! You're bad.", 1)
-
-# In[72]:
-
-
+            notify("YOU LOSE!", "go throw up")
+            
+            
+def notify(title, text):
+    os.system("""
+              osascript -e 'display dialog "{}" with title "{}"'
+              """.format(text, title))
+              
+              
 def cellChecked(event):
     global numChecked
     col = event.widget.grid_info()['column']
@@ -165,33 +154,21 @@ def cellChecked(event):
     cells[row][col]["text"] = boxes_bombs[row][col]
     if cells[row][col]["text"] == "bomb":
         window.destroy()
+        notify("YOU LOSE!", "go throw up")
         
-        ctypes.windll.user32.MessageBoxW(0, "YOU LOSE!!", "TRY ANOTHER GAME! You're bad.", 1)
+        
     if (numChecked + numFlagged) == (num_rc * num_rc):
         if numFlagged == num_bombs:
             window.destroy()
+            notify("Congratulations!", "YOU WIN")
             
-            
-            ctypes.windll.user32.MessageBoxW(0, "YOU WIN!!", "CONGRATS!!", 1)
-            
-
-            
-            
-
-
-# In[90]:
-
 
 def startPrompts():
     
     sizePrompt.grid(row=1, column=0)
     enterSize.grid(row=2, column=0)
-
-
-# In[95]:
-
-
-
+    
+    
 global numChecked
 global numFlagged 
 numChecked = 0
